@@ -21,15 +21,17 @@
 #include <SPI.h>
 #include <TidesControllerClient.h>
 
-// Enter a MAC address and IP address for your controller below.
-// The IP address will be dependent on your local network:
-byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-//169.254.35.211
-IPAddress ip(169, 254, 131, 109);
-IPAddress server(169, 254, 131, 108);
-//IPAddress ip(192, 168, 1, 177);
-//IPAddress server(1, 1, 1, 1);
-int port = 1999;
+#define DEVICE_NUMBER (0)
+const byte MAC[2][6] = {
+  {0x04, 0xE9, 0xE5, 0x07, 0xDD, 0x7D},
+  {0x04, 0xE9, 0xE5, 0x07, 0xDD, 0x65}
+};
+const IPAddress IP[] = {
+  IPAddress(169, 254, 131, 109), 
+  IPAddress(169, 254, 131, 110)
+};
+const IPAddress SERVER(169, 254, 131, 108);
+const int PORT = 1999;
 
 long readCount = 0;
 long writeCount = 0;
@@ -48,7 +50,7 @@ void setup() {
   pinMode(PIR_PIN, INPUT);
   pinMode(PIR_LED_PIN, OUTPUT);
 
-  client = TidesControllerClient(ip, server, port, mac);
+  client = TidesControllerClient(IP[DEVICE_NUMBER], SERVER, PORT, (byte*)MAC[DEVICE_NUMBER]);
 
   Serial.begin(9600);
 }
@@ -66,7 +68,7 @@ void notifyController(int value) {
   }
   if (!client.client.connected()) {
     client.client.stop();
-    client = TidesControllerClient(ip, server, port, mac);
+    client = TidesControllerClient(IP[DEVICE_NUMBER], SERVER, PORT, (byte*)MAC[DEVICE_NUMBER]);
   }
   client.client.print(value);
 }
