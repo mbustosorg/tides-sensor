@@ -27,7 +27,9 @@ TidesControllerClient::TidesControllerClient(IPAddress self, IPAddress server, i
   while (state == State::UNKNOWN) {
     Ethernet.begin(mac, self);
     if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-      Serial.println("Ethernet shield was not found.  Looking for hardware...");
+      connectionCount++;
+      Serial.print("Ethernet shield was not found.  Looking for hardware...");
+      Serial.println(connectionCount);
       delay(1000);
     } else {
       state = State::DETECTED;
@@ -50,7 +52,9 @@ TidesControllerClient::TidesControllerClient(IPAddress self, IPAddress server, i
       state = State::CONNECTED;
       Serial.println("Connected");
     } else {
-      Serial.println("Connection failed, retrying...");
+      connectionCount++;
+      Serial.print("Connection failed, retrying...");
+      Serial.println(connectionCount);
     }
   }
 }

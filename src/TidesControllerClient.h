@@ -33,7 +33,8 @@ class TidesControllerClient {
 
         State state = UNKNOWN;
         EthernetClient client;
-        
+
+        long connectionCount = 0;        
 };
 
 #endif
