@@ -74,7 +74,7 @@ void TidesControllerClient::stop() {
 
 void TidesControllerClient::send(int message) {
 
-  OSCMessage msg("/sensor");
+  OSCMessage msg("/LEDPlay/player/foregroundRunIndex");
   msg.add(mSensorId);
   msg.add(message);
   

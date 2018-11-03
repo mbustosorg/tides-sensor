@@ -21,7 +21,7 @@
 #include <SPI.h>
 #include <TidesControllerClient.h>
 
-#define DEVICE_NUMBER (1)
+#define DEVICE_NUMBER (2) // 1-5
 #define MAC_LOCAL
 const byte MAC[2][6] = {
   {0x04, 0xE9, 0xE5, 0x07, 0xDD, 0x7D},
@@ -59,7 +59,7 @@ void setup() {
   pinMode(PIR_PIN, INPUT);
   pinMode(PIR_LED_PIN, OUTPUT);
 
-  client = TidesControllerClient(IP[DEVICE_NUMBER], SERVER, PORT, (byte*)MAC[DEVICE_NUMBER], DEVICE_NUMBER);
+  client = TidesControllerClient(IP[DEVICE_NUMBER - 1], SERVER, PORT, (byte*)MAC[DEVICE_NUMBER - 1], DEVICE_NUMBER);
 
   Serial.begin(9600);
 }
@@ -77,7 +77,7 @@ void notifyController(int value) {
   }
   if (!client.connected()) {
     client.stop();
-    client = TidesControllerClient(IP[DEVICE_NUMBER], SERVER, PORT, (byte*)MAC[DEVICE_NUMBER], DEVICE_NUMBER);
+    client = TidesControllerClient(IP[DEVICE_NUMBER - 1], SERVER, PORT, (byte*)MAC[DEVICE_NUMBER - 1], DEVICE_NUMBER);
   }
   client.send(value);
 }
