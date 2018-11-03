@@ -21,6 +21,9 @@
 #define TIDESCONTROLLERCLIENT_H
 
 #include <Ethernet.h>
+#include <EthernetUDP.h>
+#include <OSCMessage.h>
+#include <OSCBoards.h>
 
 enum State {UNKNOWN, DETECTED, LINKED, CONNECTED};
 
@@ -28,13 +31,27 @@ class TidesControllerClient {
 
     public:
         TidesControllerClient();
-        TidesControllerClient(IPAddress self, IPAddress server, int port, byte* mac);
+        TidesControllerClient(IPAddress self, IPAddress server, int port, byte* mac, int sensorId);
         ~TidesControllerClient();
 
-        State state = UNKNOWN;
-        EthernetClient client;
+        void stop();
+        void send(int message);
+        void read();
+        bool connected();
 
-        long connectionCount = 0;        
+    private:
+
+        State state = UNKNOWN;
+
+        IPAddress mServer;
+        int mPort;
+        byte* mMac;
+        int mSensorId = 0;
+
+        EthernetUDP mUdp;
+        EthernetClient mClient;
+
+        long mConnectionCount = 0;        
 };
 
 #endif

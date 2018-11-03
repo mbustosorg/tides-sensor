@@ -21,16 +21,25 @@
 #include <SPI.h>
 #include <TidesControllerClient.h>
 
-#define DEVICE_NUMBER (0)
+#define DEVICE_NUMBER (1)
+//#define MAC_LOCAL
 const byte MAC[2][6] = {
   {0x04, 0xE9, 0xE5, 0x07, 0xDD, 0x7D},
   {0x04, 0xE9, 0xE5, 0x07, 0xDD, 0x65}
 };
+#ifdef MAC_LOCAL
 const IPAddress IP[] = {
   IPAddress(169, 254, 131, 109), 
   IPAddress(169, 254, 131, 110)
 };
 const IPAddress SERVER(169, 254, 131, 108);
+#else
+const IPAddress IP[] = {
+  IPAddress(192, 168, 7, 111),
+  IPAddress(192, 168, 7, 112)
+};
+const IPAddress SERVER(192, 168, 7, 101);
+#endif
 const int PORT = 1999;
 
 long readCount = 0;
@@ -50,7 +59,7 @@ void setup() {
   pinMode(PIR_PIN, INPUT);
   pinMode(PIR_LED_PIN, OUTPUT);
 
-  client = TidesControllerClient(IP[DEVICE_NUMBER], SERVER, PORT, (byte*)MAC[DEVICE_NUMBER]);
+  client = TidesControllerClient(IP[DEVICE_NUMBER], SERVER, PORT, (byte*)MAC[DEVICE_NUMBER], DEVICE_NUMBER);
 
   Serial.begin(9600);
 }
@@ -66,11 +75,11 @@ void notifyController(int value) {
     Serial.print(" Sent: ");
     Serial.println(value);
   }
-  if (!client.client.connected()) {
-    client.client.stop();
-    client = TidesControllerClient(IP[DEVICE_NUMBER], SERVER, PORT, (byte*)MAC[DEVICE_NUMBER]);
+  if (!client.connected()) {
+    client.stop();
+    client = TidesControllerClient(IP[DEVICE_NUMBER], SERVER, PORT, (byte*)MAC[DEVICE_NUMBER], DEVICE_NUMBER);
   }
-  client.client.print(value);
+  client.send(value);
 }
 
 void loop() {
@@ -83,11 +92,5 @@ void loop() {
   if (state_change) {
     notifyController(PIRValue);
   }
-  if (client.client.available()) {
-    char c = client.client.read();
-    readCount++;
-    Serial.print(readCount);
-    Serial.print(" Received: ");
-    Serial.println(c);
-  }
+  client.read();
 }

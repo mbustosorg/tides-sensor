@@ -22,14 +22,19 @@
 TidesControllerClient::TidesControllerClient() {
 }
 
-TidesControllerClient::TidesControllerClient(IPAddress self, IPAddress server, int port, byte* mac) {
+TidesControllerClient::TidesControllerClient(IPAddress self, IPAddress server, int port, byte* mac, int sensorId) {
+
+  mServer = server;
+  mPort = port;
+  mMac = mac;
+  mSensorId = sensorId;
 
   while (state == State::UNKNOWN) {
     Ethernet.begin(mac, self);
     if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-      connectionCount++;
+      mConnectionCount++;
       Serial.print("Ethernet shield was not found.  Looking for hardware...");
-      Serial.println(connectionCount);
+      Serial.println(mConnectionCount);
       delay(1000);
     } else {
       state = State::DETECTED;
@@ -48,13 +53,13 @@ TidesControllerClient::TidesControllerClient(IPAddress self, IPAddress server, i
   delay(1000);
   Serial.println("Connecting...");
   while (state == State::LINKED) {
-    if (client.connect(server, port)) {
+    if (mUdp.begin(port)) {
       state = State::CONNECTED;
       Serial.println("Connected");
     } else {
-      connectionCount++;
+      mConnectionCount++;
       Serial.print("Connection failed, retrying...");
-      Serial.println(connectionCount);
+      Serial.println(mConnectionCount);
     }
   }
 }
@@ -63,3 +68,30 @@ TidesControllerClient::~TidesControllerClient() {
 
 }
 
+void TidesControllerClient::stop() {
+  mUdp.stop();
+}
+
+void TidesControllerClient::send(int message) {
+
+  OSCMessage msg("/sensor");
+  msg.add(mSensorId);
+  msg.add(message);
+  
+  mUdp.beginPacket(mServer, mPort);
+  msg.send(mUdp); 
+  mUdp.endPacket(); 
+  msg.empty(); 
+}
+
+void TidesControllerClient::read() {
+  if (mUdp.available()) {
+    char c = mUdp.read();
+    Serial.print("Received: ");
+    Serial.println(c);
+  }
+}
+
+bool TidesControllerClient::connected() {
+  return true; //mUdp.connected();
+}
