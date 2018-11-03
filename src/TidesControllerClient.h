@@ -21,7 +21,6 @@
 #define TIDESCONTROLLERCLIENT_H
 
 #include <Ethernet.h>
-#include <EthernetUDP.h>
 #include <OSCMessage.h>
 #include <OSCBoards.h>
 

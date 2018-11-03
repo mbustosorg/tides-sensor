@@ -22,17 +22,17 @@
 #include <TidesControllerClient.h>
 
 #define DEVICE_NUMBER (1)
-//#define MAC_LOCAL
+#define MAC_LOCAL
 const byte MAC[2][6] = {
   {0x04, 0xE9, 0xE5, 0x07, 0xDD, 0x7D},
   {0x04, 0xE9, 0xE5, 0x07, 0xDD, 0x65}
 };
 #ifdef MAC_LOCAL
 const IPAddress IP[] = {
-  IPAddress(169, 254, 131, 109), 
-  IPAddress(169, 254, 131, 110)
+  IPAddress(169, 254, 18, 81), 
+  IPAddress(169, 254, 18, 82)
 };
-const IPAddress SERVER(169, 254, 131, 108);
+const IPAddress SERVER(169, 254, 18, 80);
 #else
 const IPAddress IP[] = {
   IPAddress(192, 168, 7, 111),
